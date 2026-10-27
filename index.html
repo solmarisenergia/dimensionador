@@ -227,6 +227,8 @@ label.f.alvo input{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))
 .ag select{width:auto;padding:4px 8px;font-size:13px}
 .ag-str ul{margin:4px 0 0;padding-left:18px;font-family:var(--f-mono);font-size:12.5px;display:flex;flex-direction:column;gap:2px}
 .ag-str li.ruim{color:var(--bad);font-family:var(--f-body)}
+.ag-str ul.ag-av{font-family:var(--f-body);margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.ag-seg button{padding:6px 14px;font-size:13px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -447,15 +449,16 @@ const MODULOS = [
 // Inversores string SOFAR (fichas SOFAR Brasil). rede: "220" = saída 220 V F-N ou F-F; "380" = trifásico 220/380 V.
 const S = (m, ac, rede, pvMax, mppt, spm, imax, vmax, vmin, conferir) => ({m, ac, rede, pvMax, mppt, spm, imax, vmax, vmin, conferir:!!conferir});
 const SOFAR_STRING = [
-  S("SOFAR 3KTLM-G3",3,"220",4.5,2,1,15,600,160), S("SOFAR 4KTLM-G3",4,"220",6,2,1,15,600,160),
-  S("SOFAR 5KTLM-G3",5,"220",7.5,2,1,15,600,160), S("SOFAR 6KTLM-G3",6,"220",9,2,1,15,600,160),
-  S("SOFAR 7KTLM-G3",7,"220",10.5,2,1,16,600,200), S("SOFAR 7.7KTLM-G3",7.7,"220",10.5,2,1,16,600,200),
-  S("SOFAR 8KTLM-G3",8,"220",12,2,1,16,600,230), S("SOFAR 9KTLM-G3",9,"220",13.5,2,1,16,600,260),
-  S("SOFAR 10KTLM-G3",10,"220",15,2,1,16,600,280), S("SOFAR 10.5KTLM-G3",10.5,"220",15,2,1,16,600,300),
+  // vmin = início da faixa MPPT de potência plena (valores conservadores das fichas)
+  S("SOFAR 3KTLM-G3",3,"220",4.5,2,1,15,600,200), S("SOFAR 4KTLM-G3",4,"220",6,2,1,15,600,200),
+  S("SOFAR 5KTLM-G3",5,"220",7.5,2,1,15,600,210), S("SOFAR 6KTLM-G3",6,"220",9,2,1,15,600,260),
+  S("SOFAR 7KTLM-G3",7,"220",10.5,2,1,16,600,200), S("SOFAR 7.7KTLM-G3",7.7,"220",10.5,2,1,16,600,230),
+  S("SOFAR 8KTLM-G3",8,"220",12,2,1,16,600,260), S("SOFAR 9KTLM-G3",9,"220",13.5,2,1,16,600,280),
+  S("SOFAR 10KTLM-G3",10,"220",15,2,1,16,600,300), S("SOFAR 10.5KTLM-G3",10.5,"220",15,2,1,16,600,300),
   S("SOFAR 3.3KTLX-G3",3,"380",4.5,2,1,15,1100,160), S("SOFAR 4.4KTLX-G3",4,"380",6,2,1,15,1100,190),
   S("SOFAR 5.5KTLX-G3",5,"380",7.5,2,1,15,1100,240), S("SOFAR 6.6KTLX-G3",6,"380",9,2,1,15,1100,290),
   S("SOFAR 8.8KTLX-G3",8,"380",12,2,1,15,1100,380), S("SOFAR 11KTLX-G3",10,"380",15,2,1,15,1100,420),
-  S("SOFAR 15KTLX-G3",15,"380",22.5,2,2,30,1100,300,1), S("SOFAR 20KTLX-G3",20,"380",30,2,2,30,1100,300,1),
+  S("SOFAR 15KTLX-G3",15,"380",22.5,2,2,26,1100,420), S("SOFAR 20KTLX-G3",20,"380",30,2,2,26,1100,480),
   S("SOFAR 25KTLX-G3",25,"380",37.5,2,2,40,1100,480), S("SOFAR 30KTLX-G3",30,"380",45,2,2,40,1100,480),
   S("SOFAR 33KTLX-G3",33,"380",49.5,2,2,40,1100,510), S("SOFAR 36KTLX-G3",36,"380",54,2,2,40,1100,510),
   S("SOFAR 40KTLX-G3",40,"380",60,2,2,40,1100,510), S("SOFAR 45KTLX-G3",45,"380",67.5,2,2,40,1100,540),
@@ -469,13 +472,17 @@ const SOFAR_HIB = [
   H("SOFAR ESI 3K-S1",3,"220",4.5,2,1,16,550,150,1,6), H("SOFAR ESI 3.68K-S1",3.68,"220",5.5,2,1,16,550,150,1,6),
   H("SOFAR ESI 4K-S1",4,"220",6,2,1,16,550,150,1,6), H("SOFAR ESI 4.6K-S1",4.6,"220",6.9,2,1,16,550,150,1,6),
   H("SOFAR ESI 5K-S1",5,"220",7.5,2,1,16,550,150,1,6), H("SOFAR ESI 6K-S1",6,"220",9,2,1,16,550,150,1,6),
-  H("SOFAR HYD 5KTL-3PH",5,"380",7.5,2,2,25,1000,250,2,10,1), H("SOFAR HYD 6KTL-3PH",6,"380",9,2,2,25,1000,250,2,10,1),
-  H("SOFAR HYD 8KTL-3PH",8,"380",12,2,2,25,1000,250,2,10,1), H("SOFAR HYD 10KTL-3PH",10,"380",15,2,2,25,1000,250,2,10),
-  H("SOFAR HYD 15KTL-3PH",15,"380",22.5,2,2,25,1000,300,2,10,1), H("SOFAR HYD 20KTL-3PH",20,"380",30,2,2,25,1000,350,2,10,1),
+  H("SOFAR HYD 5KTL-3PH",5,"380",7.5,2,1,12.5,1000,250,2,10), H("SOFAR HYD 6KTL-3PH",6,"380",9,2,1,12.5,1000,250,2,10),
+  H("SOFAR HYD 8KTL-3PH",8,"380",12,2,1,12.5,1000,250,2,10), H("SOFAR HYD 10KTL-3PH",10,"380",15,2,1,12.5,1000,250,2,10),
+  H("SOFAR HYD 15KTL-3PH",15,"380",22.5,2,2,25,1000,300,2,10), H("SOFAR HYD 20KTL-3PH",20,"380",30,2,2,25,1000,350,2,10),
 ];
+// Tensão de partida (vstart) e mínimo da faixa MPPT (vop) por família, das fichas SOFAR. Linhas grandes: valor conservador.
+SOFAR_STRING.forEach(x => Object.assign(x, /KTLM/.test(x.m) ? {vstart:90, vop:80} : x.ac >= 25 ? {vstart:250, vop:200} : {vstart:160, vop:140}));
+SOFAR_HIB.forEach(x => Object.assign(x, /ESI/.test(x.m) ? {vstart:100, vop:85} : {vstart:200, vop:180}));
 // Microinversores DEYE (220/230 V)
 const DEYE = {
-  m4:{m:"DEYE SUN-M225G4-EU-Q0", ac:2.25, ent:4, imax:18, pmax:790, ramal:3},
+  // Ficha SUN-M220/225G4: 4 entradas com MPPT próprio, faixa MPPT 25–55 V, máx. 60 V, 18 A por entrada, módulos 210–790 W.
+  m4:{m:"DEYE SUN-M225G4-EU-Q0", ac:2.25, ent:4, imax:18, pmax:790, pmin:210, ramal:3, vmppMin:25, vmppMax:55, vmax:60},
   m2:{m:"DEYE SUN-M100G4-EU-Q0", ac:1.0, ent:2, imax:13, pmax:700, ramal:5},
 };
 const DISP = {monofasico:30, bifasico:50, trifasico:100};
@@ -824,28 +831,38 @@ function aplicarLeitura(d){
 /* ---------- Dimensionamento ---------- */
 let R = null, nivelSel = "exp", invOpSel = "min";
 const par = n => Math.max(2, Math.ceil(n / 2) * 2);   // sempre número par de módulos
+// Limites de módulos em série no modelo x:
+// minLiga = o inversor parte (Voc ≥ tensão de partida) e o MPPT rastreia mesmo a ~65 °C (Vmp × 0,88 ≥ início da faixa MPPT);
+// minS = entra na faixa de potência plena; maxS = Voc corrigido a ~10 °C abaixo do máximo com margem.
+function serie(x, mod){
+  const vlim = x.vmax - Math.max(50, x.vmax * 0.05);
+  const maxS = Math.floor(vlim / (mod.voc * 1.04));
+  const minS = Math.max(1, Math.ceil(x.vmin / (mod.vmp * 0.88)));
+  const minLiga = Math.min(minS, Math.max(1, Math.ceil((x.vstart || x.vmin) / mod.voc), Math.ceil((x.vop || x.vmin) / (mod.vmp * 0.88))));
+  return {minS, maxS, minLiga};
+}
 // Divide Ni módulos entre os 2 MPPTs: em cada MPPT, k strings iguais de s módulos (k ≤ strings por MPPT).
+// Strings abaixo da potência plena (mas acima do mínimo para ligar) são aceitas com penalidade.
 function arranjo(Ni, mod, inv){
-  const vlim = inv.vmax - Math.max(50, inv.vmax * 0.05);
-  const maxS = Math.floor(vlim / (mod.voc * 1.04));                    // Voc corrigido a ~10 °C
-  const minS = Math.max(1, Math.ceil(inv.vmin / (mod.vmp * 0.88)));    // Vmp a ~65 °C dentro da faixa MPPT
+  const {minS, maxS, minLiga} = serie(inv, mod);
   const opts = [{k:0, s:0}];
-  for (let k = 1; k <= inv.spm; k++) for (let s = minS; s <= maxS; s++) opts.push({k, s});
+  for (let k = 1; k <= inv.spm; k++) for (let s = minLiga; s <= maxS; s++) opts.push({k, s});
   let best = null;
   for (const a of opts) { if (!a.k) continue;
     for (const b of opts) {
       if (a.k*a.s + b.k*b.s !== Ni) continue;
       if (b.k && (b.s > a.s || (b.s === a.s && b.k > a.k))) continue;
       const cA = a.k * mod.imp > inv.imax + 1e-9, cB = b.k * mod.imp > inv.imax + 1e-9;
-      const score = (cA ? 100 : 0) + (cB ? 100 : 0) + (b.k ? 0 : 20) + Math.abs(a.s - (b.s || a.s)) * 2 + (a.k - 1 + Math.max(b.k - 1, 0)) * 5 + (b.k && a.k !== b.k ? 3 : 0);
+      const score = (cA ? 100 : 0) + (cB ? 100 : 0) + (b.k ? 0 : 20) + (a.s < minS ? 15 : 0) + (b.k && b.s < minS ? 15 : 0) + Math.abs(a.s - (b.s || a.s)) * 2 + (a.k - 1 + Math.max(b.k - 1, 0)) * 5 + (b.k && a.k !== b.k ? 3 : 0);
       if (!best || score < best.score) best = {score, m:[a, b], cA, cB};
     }
   }
   if (!best) return null;
   const alertas = [];
   best.m.forEach((m, i) => { if (m.k && m.k * mod.imp > inv.imax + 1e-9) alertas.push(`MPPT ${i+1}: ${fmt(m.k*mod.imp,1)} A acima do limite de ${inv.imax} A (haverá limitação de corrente).`); });
+  best.m.forEach((m, i) => { if (m.k && m.s < minS) alertas.push(`MPPT ${i+1} com ${m.s} em série: liga e rastreia, mas fica abaixo da faixa de potência plena (${inv.vmin} V, ${minS} módulos). Sem perda relevante enquanto a potência desse MPPT for baixa.`); });
   const txt = best.m.map((m, i) => `MPPT${i+1}: ${m.k ? `${m.k > 1 ? m.k + " strings" : "1 string"} × ${m.s}` : "livre"}`).join(" · ");
-  return {...best, maxS, minS, alertas, txt};
+  return {...best, maxS, minS, minLiga, alertas, txt};
 }
 // Reparte N módulos entre n inversores, cada parte com número par sempre que possível.
 function partes(N, n){
@@ -915,6 +932,11 @@ function opcoesInversor(base, lista, mod, rmax, lim){
     o.maxN = Math.max(Nb, maxModulos(o.cfg.x, o.cfg.n, mod, rmax));
   });
   return ops;
+}
+// Texto dos mínimos e máximos de série para o card e o PDF.
+function textoSerie(x, mod, a){
+  const kmax = Math.max(1, Math.min(x.spm, Math.floor(x.imax / mod.imp + 1e-9)));
+  return `Mínimo para ligar: ${a.minLiga} módulos em série (partida ${x.vstart} V, MPPT a partir de ${x.vop} V). Potência plena a partir de ${a.minS} em série (${x.vmin} V). Máximo ${a.maxS} em série (Voc a 10 °C, limite ${x.vmax} V). Até ${kmax} string${kmax > 1 ? "s" : ""} em paralelo por MPPT (${String(x.imax).replace(".", ",")} A).`;
 }
 /* ---------- Regras da concessionária (Celesc) ---------- */
 // Distribui potências (kW) entre fases, sempre na fase menos carregada.
@@ -1035,7 +1057,7 @@ function recalc(){
     nStr.push(...inv.alertas);
     if (inv.folga) nStr.push(`Relação CC/CA um pouco acima de ${fmt(rmax,2)} para usar menos inversores.`);
     if (inv.x.conferir) nStr.push("Dados deste modelo não confirmados na ficha SOFAR Brasil: conferir antes de propor.");
-    nStr.push(`Série entre ${inv.a.minS} e ${inv.a.maxS} módulos (Voc corrigido a 10 °C, máximo ${inv.x.vmax} V).`);
+    nStr.push(textoSerie(inv.x, mod, inv.a));
     if (lim && inv.x.rede === "220" && lim.nf > 1) nStr.push(`Ligar ${inv.n > 1 ? "um inversor em cada fase" : "o inversor em uma fase"}: ${porFase(Array(inv.n).fill(inv.x.ac), lim.nf).map((p, i) => `fase ${"ABC"[i]} ${fmt(p,1)} kW`).join(", ")}.`);
   }
   if (lig === "monofasico" && rede === "220") nStr.push("Ligação monofásica 127 V: os SOFAR KTLM-G3 saem em 220 V. Prever passagem para bifásico.");
@@ -1052,6 +1074,8 @@ function recalc(){
   if (mod.imp > m4u.imax) nMic.push(`Imp do módulo (${fmt(mod.imp,2)} A) acima de ${m4u.imax} A por entrada: haverá limitação.`);
   if (sobraEm4) nMic.push(`Um SUN-M225G4 fica com 2 módulos: o SUN-M100G4 aceita até ${m2u.imax} A por entrada e o módulo tem Imp de ${fmt(mod.imp,2)} A. Com ${mic.N-2} ou ${mic.N+2} módulos todos os micros ficam completos.`);
   if (lim && lim.nf > 1) nMic.push(`Distribuição por fase: ${mic.fases.map((p, i) => `fase ${"ABC"[i]} ${fmt(p,2)} kW`).join(", ")}.`);
+  nMic.push(`Cada entrada é um MPPT independente (${m4u.vmppMin}–${m4u.vmppMax} V, até ${m4u.imax} A): 1 módulo por entrada, de 1 a 4 módulos por micro, e águas diferentes podem dividir o mesmo micro. O micro liga com 1 módulo, mas entrada vazia é potência paga sem uso.`);
+  if (mod.voc * 1.04 > m4u.vmax || mod.vmp * 0.88 < m4u.vmppMin || mod.p > m4u.pmax || mod.p < m4u.pmin) nMic.push(`Módulo fora da faixa do SUN-M225G4 (máx. ${m4u.vmax} V, MPPT ${m4u.vmppMin}–${m4u.vmppMax} V, ${m4u.pmin}–${m4u.pmax} W): conferir.`);
   nMic.push(`Até ${m4u.ramal} micros de 4 entradas por ramal CA.`);
   nMic.push("MPPT por módulo e desligamento rápido: melhor para sombras e várias águas.");
   if (!lim && lig === "monofasico" && microAC > 10) nMic.push("Acima de 10 kW exige padrão trifásico.");
@@ -1080,6 +1104,7 @@ function recalc(){
     if (nBat > hib.x.batMax * hib.n) nHib.push(`Banco acima de ${hib.x.batMax} módulos por inversor: dividir em mais inversores ou reduzir a autonomia.`);
     if (hib.n > 1 && !usa380) nHib.push("Mais de um ESI em paralelo: confirmar com a SOFAR a configuração e o quadro de cargas críticas.");
     if (hib.x.conferir) nHib.push("Dados deste modelo não confirmados na ficha SOFAR: conferir antes de propor.");
+    nHib.push(textoSerie(hib.x, mod, hib.a));
   }
   nHib.push(`Bateria para ${batTxt}, DoD 90% e eficiência 95%.`);
   nHib.push("Prever quadro de cargas críticas separado.");
@@ -1284,6 +1309,11 @@ $("btnDesfazer").addEventListener("click", () => {
 });
 $("btnLimpar").addEventListener("click", () => { areas = []; if (mode === "area") setMode("area"); else drawRoof(); });
 $("orient").addEventListener("change", drawRoof);
+$("aguas").addEventListener("click", e => {
+  const b = e.target.closest("[data-solagua]"); if (!b) return;
+  $("pdfSol").value = b.dataset.solagua; aguasSig = ""; drawRoof();
+});
+$("pdfSol").addEventListener("change", () => { aguasSig = ""; drawRoof(); });
 $("aguas").addEventListener("change", e => {
   const i = e.target.dataset?.agua; if (i == null) return;
   const fechadas = areas.filter(a => a.closed && a.pts.length >= 3);
@@ -1586,20 +1616,19 @@ let lastPlaced = 0, lastCap = 0, lastLivres = 0, aguasSig = "", stringsAgua = nu
 const ORIENT = [["", "Orientação?"], ["N","Norte"], ["NE","Nordeste"], ["L","Leste"], ["SE","Sudeste"], ["S","Sul"], ["SO","Sudoeste"], ["O","Oeste"], ["NO","Noroeste"], ["P","Plano/laje"]];
 // Combinações (k strings × s módulos) possíveis em um MPPT do modelo x.
 function opcoesMppt(x, mod){
-  const vlim = x.vmax - Math.max(50, x.vmax * 0.05);
-  const maxS = Math.floor(vlim / (mod.voc * 1.04)), minS = Math.max(1, Math.ceil(x.vmin / (mod.vmp * 0.88)));
+  const {minS, maxS, minLiga} = serie(x, mod);
   const kmax = Math.max(1, Math.min(x.spm, Math.floor(x.imax / mod.imp + 1e-9)));
   const ops = [];
-  for (let k = 1; k <= kmax; k++) for (let s = minS; s <= maxS; s++) ops.push({k, s, c:k*s});
+  for (let k = 1; k <= kmax; k++) for (let s = minLiga; s <= maxS; s++) ops.push({k, s, c:k*s});
   ops.sort((a, b) => b.c - a.c || a.k - b.k);
-  return {ops, minS, maxS};
+  return {ops, minS, maxS, minLiga};
 }
 // Divide as águas entre os MPPTs do inversor string escolhido. Águas com a mesma orientação podem dividir o MPPT;
 // águas diferentes ficam em MPPTs separados. Busca a melhor combinação: todas as águas atendidas, todos os inversores
 // usados, potência CC de cada inversor dentro do limite e MPPTs equilibrados.
-function planoStrings(aguas, inv, mod){
+function planoStrings(aguas, inv, mod, rmaxBase){
   if (!inv) return null;
-  const {ops, minS, maxS} = opcoesMppt(inv.x, mod);
+  const {ops, minS, maxS, minLiga} = opcoesMppt(inv.x, mod);
   const grupos = [];
   aguas.forEach(a => {
     if (!a.n) return;
@@ -1610,7 +1639,7 @@ function planoStrings(aguas, inv, mod){
   grupos.forEach(gp => gp.rot = gp.nomes.join(" + ") + (gp.ori ? ` (${ORIENT.find(o => o[0] === gp.ori)[1]})` : ""));
   grupos.sort((a, b) => b.c - a.c);
   const n = inv.n, S = 2 * n;
-  const rmaxP = (num($("ccca").value) || 1.3) + 0.1;
+  const rmaxP = (rmaxBase || num($("ccca").value) || 1.3) + 0.1;
   const capInv = Math.floor(Math.min(inv.x.pvMax, inv.x.ac * rmaxP) * 1000 / mod.p + 1e-9);
   const decomp = c => {
     const out = [];
@@ -1631,7 +1660,7 @@ function planoStrings(aguas, inv, mod){
     const media = load.reduce((a, b) => a + b, 0) / n;
     let sc = fora.reduce((a, gi) => a + 10000 + grupos[gi].c, 0) + (n - usadosInv) * 1000 + livres * 5 + load.reduce((a, l) => a + Math.abs(l - media), 0);
     for (let k = 0; k < S; k += 2) if (slot[k] && slot[k+1]) sc += Math.abs(slot[k].o.c - slot[k+1].o.c) * 0.5;
-    slot.forEach(x => { if (x) sc += (x.o.k - 1) * 2; });
+    slot.forEach(x => { if (x) sc += (x.o.k - 1) * 2 + (x.o.s < minS ? 8 : 0); });
     if (!best || sc < best.sc) best = {sc, slot:slot.map(x => x && {...x}), fora:[...fora]};
   };
   const porGrupo = (gi, fora) => {
@@ -1655,34 +1684,92 @@ function planoStrings(aguas, inv, mod){
   };
   porGrupo(0, []);
   if (!best) return null;
-  const linhas = [], msgs = [];
+  const linhas = [], msgs = [], avisos = [];
   best.slot.forEach((x, k) => { if (!x) return;
-    linhas.push(`${n > 1 ? `Inv. ${Math.floor(k / 2) + 1} · ` : ""}MPPT ${k % 2 + 1} → ${grupos[x.gi].rot}: ${x.o.k > 1 ? x.o.k + " strings" : "1 string"} × ${x.o.s}`); });
+    linhas.push(`${n > 1 ? `Inv. ${Math.floor(k / 2) + 1} · ` : ""}MPPT ${k % 2 + 1} → ${grupos[x.gi].rot}: ${x.o.k > 1 ? x.o.k + " strings" : "1 string"} × ${x.o.s}`);
+    if (x.o.s < minS) avisos.push(`${grupos[x.gi].rot}: string de ${x.o.s} liga (mínimo ${minLiga}), mas fica abaixo da potência plena (${minS} em série). Aceitável em água pequena; se puder, junte com outra água de mesma orientação.`); });
+  avisos.push(`Neste inversor: mínimo ${minLiga} em série para ligar, ${minS} para potência plena, máximo ${maxS}.`);
   const total = grupos.reduce((a, g) => a + g.c, 0);
   if (best.fora.length && total > n * capInv) msgs.push(`Os ${total} módulos desenhados passam do que ${n > 1 ? `os ${n} inversores aceitam` : "o inversor aceita"} (até ${n * capInv} módulos). Escolha uma opção de inversor maior ou reduza os módulos.`);
-  else best.fora.forEach(gi => { const g = grupos[gi]; msgs.push(g.c < minS
-    ? `${g.rot}: ${g.c} módulos, abaixo do mínimo de ${minS} em série. Mova módulos para outra água ou use microinversores nela.`
+  else best.fora.forEach(gi => { const g = grupos[gi]; msgs.push(g.c < minLiga
+    ? `${g.rot}: ${g.c} módulos, abaixo do mínimo de ${minLiga} em série para ligar o MPPT. Mova módulos para outra água ou use microinversores nela.`
     : decs[gi].length ? `${g.rot}: ${g.c} módulos sem MPPT livre. Marque a mesma orientação nas águas iguais, junte águas ou escolha outra opção de inversor.`
-    : `${g.rot}: ${g.c} módulos não fecham em strings de ${minS} a ${maxS} em série. Ajuste a quantidade nessa água.`); });
+    : `${g.rot}: ${g.c} módulos não fecham em strings de ${minLiga} a ${maxS} em série. Ajuste a quantidade nessa água.`); });
   const vazios = n - new Set(best.slot.map((x, k) => x ? Math.floor(k / 2) : -1).filter(v => v >= 0)).size;
   if (vazios > 0 && !best.fora.length) msgs.push(`${vazios} inversor${vazios > 1 ? "es ficam" : " fica"} sem módulos com essa divisão por água. Reveja a quantidade de inversores.`);
-  return {linhas, msgs, ok:!msgs.length, usados:best.slot.filter(Boolean).length, slots:S, total};
+  return {tipo:"string", linhas, msgs, avisos, ok:!msgs.length, usados:best.slot.filter(Boolean).length, slots:S, total};
+}
+// Microinversores DEYE de 4 entradas: cada entrada é um MPPT de 1 módulo, então cada água fecha em micros completos
+// e as sobras de águas diferentes dividem micros (orientações diferentes no mesmo micro não atrapalham).
+function planoMicro(aguas, mod, lim){
+  const m4u = DEYE.m4, E = m4u.ent;
+  const ags = aguas.filter(a => a.n > 0);
+  if (!ags.length) return null;
+  const rot = a => a.nome + (a.ori ? ` (${ORIENT.find(o => o[0] === a.ori)[1]})` : "");
+  const total = ags.reduce((s, a) => s + a.n, 0);
+  const linhas = [], msgs = [], avisos = [];
+  const sobras = [];
+  let cheios = 0;
+  ags.forEach(a => {
+    const c = Math.floor(a.n / E), r = a.n % E; cheios += c;
+    linhas.push(`${rot(a)}: ${a.n} módulo${a.n > 1 ? "s" : ""} → ${c ? `${c} micro${c > 1 ? "s" : ""} completo${c > 1 ? "s" : ""}` : "nenhum micro completo"}${r ? ` + ${r} em outro micro` : ""}`);
+    if (r) sobras.push({a, r});
+  });
+  // Sobras dividem micros: primeiro sem partir a sobra de uma água entre dois micros; se isso custar micro a mais, preenche em sequência.
+  sobras.sort((x, y) => y.r - x.r);
+  const minMist = Math.ceil(sobras.reduce((t, x) => t + x.r, 0) / E);
+  let mist = [];
+  sobras.forEach(({a, r}) => { const b = mist.find(m => m.liv >= r); if (b) { b.it.push(`${r} da ${a.nome}`); b.liv -= r; } else mist.push({it:[`${r} da ${a.nome}`], liv:E - r}); });
+  if (mist.length > minMist) {
+    mist = []; let cur = {it:[], liv:E};
+    sobras.forEach(({a, r}) => { while (r > 0) { const t = Math.min(r, cur.liv); cur.it.push(`${t} da ${a.nome}`); r -= t; cur.liv -= t; if (!cur.liv) { mist.push(cur); cur = {it:[], liv:E}; } } });
+    if (cur.it.length) mist.push(cur);
+  }
+  mist = mist.map(m => m.it);
+  mist.forEach((m, i) => linhas.push(`Micro ${m.length > 1 ? "compartilhado" : "parcial"} ${mist.length > 1 ? i + 1 : ""}`.trim() + `: ${m.join(" + ")}${m.length > 1 ? "" : " (entradas livres)"}`));
+  const nMic = cheios + mist.length, livres = nMic * E - total;
+  const separado = ags.reduce((s, a) => s + Math.ceil(a.n / E), 0);
+  if (separado > nMic) avisos.push(`Sem misturar águas no mesmo micro seriam ${separado} micros (${separado * E - total} entradas vazias). Misturar é permitido: cada entrada tem MPPT próprio.`);
+  if (livres) avisos.push(`${livres} entrada${livres > 1 ? "s" : ""} livre${livres > 1 ? "s" : ""}: dá para adicionar ${livres} módulo${livres > 1 ? "s" : ""} sem comprar outro micro.`);
+  const ac = nMic * m4u.ac, ramais = Math.ceil(nMic / m4u.ramal);
+  const fases = porFase(Array(nMic).fill(m4u.ac), lim ? lim.nf : 1);
+  if (lim && lim.nf > 1) avisos.push(`Fases: ${fases.map((p, i) => `${"ABC"[i]} ${fmt(p,2)} kW`).join(", ")}.`);
+  if (lim && (ac > lim.total + 1e-9 || Math.max(...fases) > lim.porFase + 1e-9 || (lim.deseq != null && Math.max(...fases) - Math.min(...fases) > lim.deseq + 1e-9)))
+    msgs.push(`${nMic} micros (${fmt(ac,2)} kW) passam da regra Celesc (${lim.txt}). Reduza os módulos desenhados.`);
+  if (mod.imp > m4u.imax) msgs.push(`Imp do módulo (${fmt(mod.imp,2)} A) acima de ${m4u.imax} A por entrada: haverá limitação.`);
+  if (mod.voc * 1.04 > m4u.vmax || mod.vmp * 0.88 < m4u.vmppMin) msgs.push(`Tensão do módulo fora da faixa da entrada do micro (MPPT ${m4u.vmppMin}–${m4u.vmppMax} V, máx. ${m4u.vmax} V).`);
+  avisos.push(`Mínimo por micro: 1 módulo (liga e rastreia sozinho). Ideal: ${E} módulos, todas as entradas ocupadas. ${ramais} ${ramais > 1 ? "ramais" : "ramal"} CA (até ${m4u.ramal} micros por ramal).`);
+  return {tipo:"micro", linhas, msgs, avisos, ok:!msgs.length, usados:total, slots:nMic * E, total, nMic, livres, ac, ramais};
 }
 function renderAguas(mod, ppm){
   const fechadas = areas.filter(a => a.closed && a.pts.length >= 3);
   const box = $("aguas");
   if (!fechadas.length || !ppm) { box.hidden = true; stringsAgua = null; aguasSig = ""; return; }
   const aguas = fechadas.map((a, i) => ({nome:`Água ${i+1}`, ori:a.ori || "", n:a.nMods || 0, livres:a.nLivres || 0, area:a}));
-  const ent = JSON.stringify([aguas.map(a => [a.ori, a.n]), R && R.inv && [R.inv.x.m, R.inv.n], mod.id, $("ccca").value]);
-  if (ent !== planoEnt) { planoEnt = ent; stringsAgua = planoStrings(aguas, R && R.inv, mod); }
-  const sig = JSON.stringify([aguas.map(a => [a.ori, a.n, a.livres]), stringsAgua, R && R.inv && R.inv.x.m + R.inv.n]);
+  const tipo = solAgua();
+  const alvo = tipo === "hib" ? R && R.hib : R && R.inv;
+  const ent = JSON.stringify([tipo, aguas.map(a => [a.ori, a.n]), alvo && [alvo.x.m, alvo.n], mod.id, $("ccca").value, R && R.lim && R.lim.txt]);
+  if (ent !== planoEnt) { planoEnt = ent; stringsAgua = tipo === "micro" ? planoMicro(aguas, mod, R && R.lim) : planoStrings(aguas, alvo, mod, tipo === "hib" ? Math.max(num($("ccca").value) || 1.3, 1.5) : 0); }
+  const sig = JSON.stringify([tipo, aguas.map(a => [a.ori, a.n, a.livres]), stringsAgua, alvo && alvo.x.m + alvo.n, R && R.comBess]);
   if (sig === aguasSig) return;
   aguasSig = sig; box.hidden = false;
   const linhasHtml = stringsAgua ? stringsAgua.linhas.map(l => `<li>${escapeHtml(l)}</li>`).join("") + stringsAgua.msgs.map(m => `<li class="ruim">${escapeHtml(m)}</li>`).join("") : "";
-  box.innerHTML = `<div class="ag-h"><strong>Águas e strings</strong><span class="hint">Cada água tem orientação própria; águas diferentes vão para MPPTs diferentes. Marque a orientação para juntar águas iguais.</span></div>
+  const avisosHtml = stringsAgua && stringsAgua.avisos.length ? `<ul class="ag-av">${stringsAgua.avisos.map(m => `<li>${escapeHtml(m)}</li>`).join("")}</ul>` : "";
+  const tipos = [["string", "Inversor string"], ["micro", "Microinversor"]].concat(R && R.comBess && R.hib ? [["hib", "Híbrido"]] : []);
+  const seg = `<div class="seg ag-seg" role="radiogroup" aria-label="Tipo de inversor para dividir as águas">${tipos.map(([k, t]) => `<button type="button" role="radio" data-solagua="${k}" aria-checked="${k === tipo}">${t}</button>`).join("")}</div>`;
+  const vazio = "<li>Coloque módulos nas águas para fazer a divisão.</li>";
+  let corpo = "";
+  if (tipo === "micro") corpo = `<div class="ag-str"><span class="hint">Distribuição em DEYE SUN-M225G4 (4 entradas, 1 módulo por entrada)${stringsAgua ? `: ${stringsAgua.nMic} micro${stringsAgua.nMic > 1 ? "s" : ""}, ${stringsAgua.total} de ${stringsAgua.slots} entradas ocupadas, ${fmt(stringsAgua.ac,2)} kW CA` : ""}:</span><ul>${linhasHtml || vazio}</ul>${avisosHtml}${stringsAgua && stringsAgua.ok ? `<p class="hint" style="color:var(--ok)">Distribuição válida para as águas desenhadas.</p>` : ""}</div>`;
+  else if (alvo) corpo = `<div class="ag-str"><span class="hint">Divisão de strings no ${escapeHtml(alvo.n > 1 ? alvo.n + " × " : "")}${escapeHtml(alvo.x.m)}${tipo === "string" && R.invOp ? ` (${escapeHtml(R.invOp.nome.toLowerCase())})` : ""}, ${stringsAgua ? stringsAgua.usados : 0} de ${2 * alvo.n} MPPTs:</span><ul>${linhasHtml || vazio}</ul>${avisosHtml}${stringsAgua && stringsAgua.ok ? `<p class="hint" style="color:var(--ok)">Divisão válida para as águas desenhadas.</p>` : ""}</div>`;
+  else corpo = `<p class="hint">Sem inversor ${tipo === "hib" ? "híbrido" : "string"} para este nível. Experimente microinversor.</p>`;
+  const dica = tipo === "micro" ? "Com microinversor cada módulo tem MPPT próprio: as águas podem ter qualquer quantidade e orientações diferentes podem dividir o mesmo micro."
+    : "Cada água tem orientação própria; águas diferentes vão para MPPTs diferentes. Marque a orientação para juntar águas iguais.";
+  box.innerHTML = `<div class="ag-h"><strong>Águas e ${tipo === "micro" ? "microinversores" : "strings"}</strong><span class="hint">${dica}</span></div>${seg}
     <div class="ag-lista">${aguas.map((a, i) => `<div class="ag"><b>${a.nome}</b><select data-agua="${i}" aria-label="Orientação da ${a.nome}">${ORIENT.map(([v, t]) => `<option value="${v}"${v === a.ori ? " selected" : ""}>${t}</option>`).join("")}</select><span>${a.n} módulos</span><span class="hint">+${a.livres} livres</span></div>`).join("")}</div>
-    ${R && R.inv ? `<div class="ag-str"><span class="hint">Divisão de strings no ${escapeHtml(R.inv.n > 1 ? R.inv.n + " × " : "")}${escapeHtml(R.inv.x.m)} (${R.invOp ? escapeHtml(R.invOp.nome.toLowerCase()) : ""}), ${stringsAgua ? stringsAgua.usados : 0} de ${2 * R.inv.n} MPPTs:</span><ul>${linhasHtml || "<li>Coloque módulos nas águas para dividir as strings.</li>"}</ul>${stringsAgua && stringsAgua.ok ? `<p class="hint" style="color:var(--ok)">Divisão válida para as águas desenhadas.</p>` : ""}</div>` : ""}`;
+    ${corpo}`;
 }
+// Tipo de inversor usado no painel de águas: o mesmo escolhido para o PDF.
+function solAgua(){ const v = $("pdfSol").value; return v === "micro" || (v === "hib" && R && R.comBess && R.hib) ? v : "string"; }
 function drawRoof(){
   if (!roofImg) return;
   const W = cv.width, H = cv.height, u = Math.max(W, H) / 1200;
@@ -1851,6 +1938,10 @@ function logoPng(){
   c.getContext("2d").drawImage(im, 0, 0); return {url:c.toDataURL("image/png"), w:c.width, h:c.height};
 }
 const LIG_TXT = {monofasico:"Monofásica", bifasico:"Bifásica", trifasico:"Trifásica"};
+// Linhas da divisão por água no PDF, só quando o painel foi calculado para a mesma solução.
+const aguaDe = t => stringsAgua && stringsAgua.tipo === (t === "micro" ? "micro" : "string") && solAgua() === t && stringsAgua.linhas.length ? stringsAgua : null;
+const porAgua = t => { const p = aguaDe(t); return p ? [[t === "micro" ? `Micros por água (${p.total} no desenho)` : `Strings por água (${p.total} no desenho)`, p.linhas.join("\n")]] : []; };
+const notasAgua = t => { const p = aguaDe(t); return p ? [...p.msgs, ...p.avisos] : []; };
 function solucaoPdf(id){
   const mod = R.mod, kp = n => n * mod.p / 1000, gp = n => kp(n) * R.porKwp;
   const un = o => `${o.n > 1 ? o.n + " × " : ""}${o.x.m}`, ac = o => o.x.ac * o.n;
@@ -1860,14 +1951,16 @@ function solucaoPdf(id){
     ["Inversor", un(R.inv)], ["Saída", saida(R.inv)], ["Relação CC/CA", fmt(kp(R.inv.N)/ac(R.inv),2)],
     ["Módulos", `${R.inv.N} × ${mod.nome}`], ["Strings", R.inv.txt.replace(/ \| /g, "\n").replace(/ · /g, "\n")], ["Geração estimada", `${fmt(gp(R.inv.N),0)} kWh/mês`],
     ...(R.invOp ? [["Expansão futura", `até ${R.invOp.maxN} módulos (+${R.invOp.maxN - R.inv.N})` + (lastLivres || lastLivres === 0 ? `\nno telhado cabem mais ${lastLivres}` : "")]] : []),
-    ...(stringsAgua && stringsAgua.linhas.length ? [[`Strings por água (${stringsAgua.total} no desenho)`, stringsAgua.linhas.join("\n")]] : [])], notas:[...(R.inv.alertas || []), ...(stringsAgua ? stringsAgua.msgs : [])]};
+    ...porAgua("string")], notas:[...(R.inv.alertas || []), textoSerie(R.inv.x, mod, R.inv.a), ...notasAgua("string")]};
   if (id === "micro") return {nome:"Microinversores DEYE", tag:"Módulo a módulo", N:R.mic.N, rows:[
     ["Microinversores", `${R.nM4} × DEYE SUN-M225G4` + (R.nM2 ? ` + ${R.nM2} × DEYE SUN-M100G4` : "")], ["Potência CA", `${fmt(R.microAC,2)} kW`],
-    ["Relação CC/CA", fmt(kp(R.mic.N)/R.microAC,2)], ["Módulos", `${R.mic.N} × ${mod.nome}`], ["Geração estimada", `${fmt(gp(R.mic.N)*0.985,0)} kWh/mês`]], notas:[]};
+    ["Relação CC/CA", fmt(kp(R.mic.N)/R.microAC,2)], ["Módulos", `${R.mic.N} × ${mod.nome}`], ["Geração estimada", `${fmt(gp(R.mic.N)*0.985,0)} kWh/mês`],
+    ...porAgua("micro")], notas:["1 módulo por entrada (MPPT próprio); o micro liga com 1 módulo e o ideal é ocupar as 4 entradas.", ...notasAgua("micro")]};
   if (id === "hib" && R.hib) return {nome:"Híbrido SOFAR + baterias", tag:"Inversor híbrido + BTS 5K", N:R.hib.N, rows:[
     ["Inversor híbrido", un(R.hib)], ["Saída", saida(R.hib)], ["Relação CC/CA", fmt(kp(R.hib.N)/ac(R.hib),2)],
     ["Módulos", `${R.hib.N} × ${mod.nome}`], ["Strings", R.hib.txt.replace(/ \| /g, "\n").replace(/ · /g, "\n")],
-    ["Baterias", R.nBat ? `${R.nBat} × SOFAR BTS 5K (${fmt(R.nBat*BAT_MOD,2)} kWh)` : "–"], ["Objetivo", R.batTxt], ["Geração estimada", `${fmt(gp(R.hib.N)*0.97,0)} kWh/mês`]], notas:R.hib.alertas || []};
+    ["Baterias", R.nBat ? `${R.nBat} × SOFAR BTS 5K (${fmt(R.nBat*BAT_MOD,2)} kWh)` : "–"], ["Objetivo", R.batTxt], ["Geração estimada", `${fmt(gp(R.hib.N)*0.97,0)} kWh/mês`],
+    ...porAgua("hib")], notas:[...(R.hib.alertas || []), textoSerie(R.hib.x, mod, R.hib.a), ...notasAgua("hib")]};
   return null;
 }
 function atualizarPdfSol(){
